@@ -1,13 +1,9 @@
-import acm.graphics.GRect;
 import acm.program.GraphicsProgram;
 import java.awt.event.KeyEvent;
 
 public class BreakoutGame extends GraphicsProgram {
 
-    private Paddle paddle;
-    private GRect paddleView;
-    private boolean leftPressed;
-    private boolean rightPressed;
+    private GameEngine engine;
 
     @Override
     public void init() {
@@ -19,22 +15,22 @@ public class BreakoutGame extends GraphicsProgram {
     @Override
     public void run() {
         fitCanvasToWindow();
+        BreakoutCanvas view = new BreakoutCanvas(getGCanvas());
+        engine = new GameEngine(view);
+        engine.run();
+    }
 
-        paddle = new Paddle();
-        paddleView = new GRect(Constants.PADDLE_WIDTH, Constants.PADDLE_HEIGHT);
-        paddleView.setFilled(true);
-        paddleView.setColor(Constants.PADDLE_COLOR);
-        add(paddleView, paddle.getX(), paddle.getY());
+    @Override 
+    public void keyPressed(KeyEvent e) {
+        if (engine != null) {
+            engine.keyPressed(e.getKeyCode());
+        }
+    }
 
-        while (true) {
-            if (leftPressed) {
-                paddle.moveLeft();
-            }
-            if (rightPressed) {
-                paddle.moveRight();
-            }
-            paddleView.setLocation(paddle.getX(), paddle.getY());
-            pause(Constants.FRAME_DELAY_MS);
+    @Override 
+    public void keyReleased(KeyEvent e) {
+        if (engine != null) {
+            engine.keyReleased(e.getKeyCode());
         }
     }
 
@@ -45,19 +41,7 @@ public class BreakoutGame extends GraphicsProgram {
                 Constants.CANVAS_HEIGHT + extraHeight);
     }
 
-    @Override 
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) leftPressed = true;
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) rightPressed = true;
-    }
-
-    @Override 
-    public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) leftPressed = false;
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) rightPressed = false;
-    }
-
-    public static void main(String[] args) {
+       public static void main(String[] args) {
         new BreakoutGame().start();
     }
 }
