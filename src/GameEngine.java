@@ -9,12 +9,14 @@ public class GameEngine {
     private volatile boolean rightPressed;
     private volatile boolean launchRequested;
     private GameState state;
+    private int lives;
 
     public GameEngine(BreakoutCanvas view) {
         this.view = view;
         this.paddle = new Paddle();
         this.ball = new Ball();
         this.state = GameState.READY;
+        this.lives = Constants.INITIAL_LIVES;
     }
 
     public void keyPressed(int keyCode) {
@@ -64,13 +66,25 @@ public class GameEngine {
         }
     }
 
-    private void updateRunning() {
+        private void updateRunning() {
         launchRequested = false;
         ball.move();
         ball.bounceOffWalls();
+        if (ball.hitsPaddle(paddle)) {
+            ball.bounceOffPaddle(paddle);
+        }
         if (ball.isLost()) {
+            loseLife();
+        }
+    }
+
+    private void loseLife() {
+        lives--;
+        if (lives > 0) {
             state = GameState.READY;
             ball.placeOnPaddle(paddle);
+        } else {
+            state = GameState.GAME_OVER;
         }
     }
 

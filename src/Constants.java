@@ -18,6 +18,8 @@ public final class Constants {
     public static final double BALL_LAUNCH_MAX_ANGLE_DEG = 30.0;
     public static final Color BALL_COLOR = Color.WHITE;
     public static final int WALL_TOP_Y = 0;
+    public static final double BALL_MAX_BOUNCE_ANGLE_DEG = 60.0;
+    public static final int INITIAL_LIVES = 3;
 
     private Constants() {
     }

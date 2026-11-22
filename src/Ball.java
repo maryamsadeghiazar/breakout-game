@@ -45,6 +45,31 @@ public class Ball {
         return y + Constants.BALL_DIAMETER > Constants.CANVAS_HEIGHT;
     }
 
+        public boolean hitsPaddle(Paddle paddle) {
+        boolean movingDown = vy > 0;
+        boolean overlapsX = x + Constants.BALL_DIAMETER > paddle.getX()
+                && x < paddle.getX() + Constants.PADDLE_WIDTH;
+        boolean overlapsY = y + Constants.BALL_DIAMETER >= paddle.getY()
+                && y < paddle.getY() + Constants.PADDLE_HEIGHT;
+        return movingDown && overlapsX && overlapsY;
+    }
+
+    public void bounceOffPaddle(Paddle paddle) {
+        double paddleCenter = paddle.getX() + Constants.PADDLE_WIDTH / 2.0;
+        double ballCenter = x + Constants.BALL_RADIUS;
+        double halfWidth = Constants.PADDLE_WIDTH / 2.0;
+
+        double offset = (ballCenter - paddleCenter) / halfWidth;
+        offset = Math.max(-1.0, Math.min(1.0, offset));
+
+        double angle = Math.toRadians(offset * Constants.BALL_MAX_BOUNCE_ANGLE_DEG);
+        double speed = Math.hypot(vx, vy);
+
+        vx = speed * Math.sin(angle);
+        vy = -Math.abs(speed * Math.cos(angle));
+        y = paddle.getY() - Constants.BALL_DIAMETER;
+    }
+
     public void reverseX() { vx = -vx; }
     public void reverseY() { vy = -vy; }
 
