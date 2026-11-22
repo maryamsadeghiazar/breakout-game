@@ -1,22 +1,30 @@
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameEngine {
 
     private final Paddle paddle;
     private final Ball ball;
+    private final List<Brick> bricks;
     private final BreakoutCanvas view;
     private volatile boolean leftPressed;
     private volatile boolean rightPressed;
     private volatile boolean launchRequested;
     private GameState state;
     private int lives;
+    private int score;
+    private int remainingBricks;
 
     public GameEngine(BreakoutCanvas view) {
         this.view = view;
         this.paddle = new Paddle();
         this.ball = new Ball();
+        this.bricks = createBricks();
+        this.remainingBricks = bricks.size();
         this.state = GameState.READY;
         this.lives = Constants.INITIAL_LIVES;
+        view.initBricks(bricks);
     }
 
     public void keyPressed(int keyCode) {
@@ -33,9 +41,23 @@ public class GameEngine {
     public void run() {
         while (true) {
             update();
-            view.draw(paddle, ball);
+            view.draw(paddle, ball, bricks);
             waitForNextFrame();
         }
+    }
+
+    private List<Brick> createBricks() {
+        List<Brick> list = new ArrayList<>();
+        for (int row = 0; row < Constants.BRICK_ROWS; row++) {
+            for (int col = 0; col < Constants.BRICK_COLS; col++) {
+                int x = Constants.BRICKS_LEFT
+                        + col * (Constants.BRICK_WIDTH + Constants.BRICK_GAP);
+                int y = Constants.BRICKS_TOP
+                        + row * (Constants.BRICK_HEIGHT + Constants.BRICK_GAP);
+                list.add(new Brick(x, y));
+            }
+        }
+        return list;
     }
 
     private void update() {
@@ -66,15 +88,30 @@ public class GameEngine {
         }
     }
 
-        private void updateRunning() {
+    private void updateRunning() {
         launchRequested = false;
         ball.move();
         ball.bounceOffWalls();
         if (ball.hitsPaddle(paddle)) {
             ball.bounceOffPaddle(paddle);
         }
-        if (ball.isLost()) {
+        handleBrickCollision();
+        if (remainingBricks == 0) {
+            state = GameState.VICTORY;
+        } else if (ball.isLost()) {
             loseLife();
+        }
+    }
+
+    private void handleBrickCollision() {
+        for (Brick brick : bricks) {
+            if (ball.hitsBrick(brick)) {
+                ball.bounceOffBrick(brick);
+                brick.hit();
+                score += Constants.BRICK_POINTS;
+                remainingBricks--;
+                return;
+            }
         }
     }
 

@@ -21,6 +21,18 @@ public final class Constants {
     public static final double BALL_MAX_BOUNCE_ANGLE_DEG = 60.0;
     public static final int INITIAL_LIVES = 3;
 
+    public static final int BRICK_ROWS = 5;
+    public static final int BRICK_COLS = 8;
+    public static final int BRICK_WIDTH = 85;
+    public static final int BRICK_HEIGHT = 25;
+    public static final int BRICK_GAP = 6;
+    public static final int BRICKS_TOP = 60;
+    public static final int BRICKS_LEFT = 39;
+    public static final int BRICK_POINTS = 100;
+    public static final Color[] BRICK_COLORS = {
+        Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN
+    };
+
     private Constants() {
     }
 }

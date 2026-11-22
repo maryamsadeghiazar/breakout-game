@@ -70,6 +70,30 @@ public class Ball {
         y = paddle.getY() - Constants.BALL_DIAMETER;
     }
 
+        public boolean hitsBrick(Brick brick) {
+        return !brick.isDestroyed()
+                && x + Constants.BALL_DIAMETER > brick.getX()
+                && x < brick.getX() + Constants.BRICK_WIDTH
+                && y + Constants.BALL_DIAMETER > brick.getY()
+                && y < brick.getY() + Constants.BRICK_HEIGHT;
+    }
+
+    public void bounceOffBrick(Brick brick) {
+        double overlapLeft = x + Constants.BALL_DIAMETER - brick.getX();
+        double overlapRight = brick.getX() + Constants.BRICK_WIDTH - x;
+        double overlapTop = y + Constants.BALL_DIAMETER - brick.getY();
+        double overlapBottom = brick.getY() + Constants.BRICK_HEIGHT - y;
+
+        double overlapX = Math.min(overlapLeft, overlapRight);
+        double overlapY = Math.min(overlapTop, overlapBottom);
+
+        if (overlapX < overlapY) {
+            reverseX();
+        } else {
+            reverseY();
+        }
+    }
+
     public void reverseX() { vx = -vx; }
     public void reverseY() { vy = -vy; }
 
