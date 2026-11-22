@@ -95,7 +95,7 @@ public class GameEngine {
         ball.move();
         ball.bounceOffWalls();
         if (ball.hitsPaddle(paddle)) {
-            ball.bounceOffPaddle(paddle);
+            bounceBallOffPaddle();
         }
         handleBrickCollision();
         if (remainingBricks == 0) {
@@ -103,6 +103,24 @@ public class GameEngine {
         } else if (ball.isLost()) {
             loseLife();
         }
+    }
+
+    private void bounceBallOffPaddle() {
+        double paddleCenter = paddle.getX() + paddle.getWidth() / 2.0;
+        double ballCenter = ball.getX() + ball.getRadius();
+        double deltaX = ballCenter - paddleCenter;
+        double halfWidth = paddle.getWidth() / 2.0;
+
+        double offset = deltaX / halfWidth;
+        offset = Math.max(-1.0, Math.min(1.0, offset));
+
+        double angle = offset * Math.toRadians(Constants.BALL_MAX_BOUNCE_ANGLE_DEG);
+        double speed = Math.hypot(ball.getVx(), ball.getVy());
+
+        ball.setVx(speed * Math.sin(angle));
+        ball.setVy(-Math.abs(speed * Math.cos(angle)));
+        
+        ball.setY(paddle.getY() - ball.getRadius() * 2);
     }
 
     private void handleBrickCollision() {
