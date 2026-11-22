@@ -1,6 +1,8 @@
 import acm.graphics.GCanvas;
+import acm.graphics.GLabel;
 import acm.graphics.GOval;
 import acm.graphics.GRect;
+import acm.graphics.GLabel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,9 @@ public class BreakoutCanvas {
     private final GRect paddleView;
     private final GOval ballView;
     private final List<GRect> brickViews = new ArrayList<>();
+    private final GLabel livesLabel;
+    private final GLabel scoreLabel;
+    private final GLabel highScoreLabel;
 
     public BreakoutCanvas(GCanvas canvas) {
         this.canvas = canvas;
@@ -23,6 +28,15 @@ public class BreakoutCanvas {
         ballView.setFilled(true);
         ballView.setColor(Constants.BALL_COLOR);
         canvas.add(ballView);
+
+        GRect hudBar = new GRect(0, 0, Constants.CANVAS_WIDTH, Constants.HUD_HEIGHT);
+        hudBar.setFilled(true);
+        hudBar.setColor(Constants.HUD_BACKGROUND_COLOR);
+        canvas.add(hudBar);
+
+        livesLabel = createHudLabel(canvas);
+        scoreLabel = createHudLabel(canvas);
+        highScoreLabel = createHudLabel(canvas);
     }
 
     public void initBricks(List<Brick> bricks) {
@@ -44,5 +58,30 @@ public class BreakoutCanvas {
         for (int i = 0; i < bricks.size(); i++) {
             brickViews.get(i).setVisible(!bricks.get(i).isDestroyed());
         }
+    }
+
+        public void drawHud(int lives, int score, int highScore) {
+        livesLabel.setLabel("Lives: " + lives);
+        scoreLabel.setLabel("Score: " + score);
+        highScoreLabel.setLabel("Best: " + highScore);
+
+        placeLabel(livesLabel, Constants.HUD_MARGIN);
+        placeLabel(scoreLabel,
+                (Constants.CANVAS_WIDTH - scoreLabel.getWidth()) / 2);
+        placeLabel(highScoreLabel,
+                Constants.CANVAS_WIDTH - highScoreLabel.getWidth() - Constants.HUD_MARGIN);
+    }
+
+    private GLabel createHudLabel(GCanvas canvas) {
+        GLabel label = new GLabel("");
+        label.setFont(Constants.HUD_FONT);
+        label.setColor(Constants.HUD_TEXT_COLOR);
+        canvas.add(label);
+        return label;
+    }
+
+    private void placeLabel(GLabel label, double x) {
+        double y = (Constants.HUD_HEIGHT + label.getAscent()) / 2;
+        label.setLocation(x, y);
     }
 }

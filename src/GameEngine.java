@@ -14,6 +14,7 @@ public class GameEngine {
     private GameState state;
     private int lives;
     private int score;
+    private int highScore;
     private int remainingBricks;
 
     public GameEngine(BreakoutCanvas view) {
@@ -42,6 +43,7 @@ public class GameEngine {
         while (true) {
             update();
             view.draw(paddle, ball, bricks);
+            view.drawHud(lives, score, highScore);
             waitForNextFrame();
         }
     }
