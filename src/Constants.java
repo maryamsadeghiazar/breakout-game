@@ -53,6 +53,10 @@ public final class Constants {
     public static final String HINT_PAUSED = "Press P to resume";
     public static final String HINT_RESTART = "Press R to restart";
 
+    public static final int STRONG_BRICK_ROWS = 1;
+    public static final int STRONG_BRICK_HITS = 2;
+    public static final Color STRONG_BRICK_COLOR = new Color(176, 160, 190);
+
     private Constants() {
     }
 

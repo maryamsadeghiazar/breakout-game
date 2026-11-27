@@ -73,8 +73,10 @@ public class Ball {
 
         if (overlapX < overlapY) {
             reverseX();
+            x += (overlapLeft < overlapRight ) ? -overlapLeft : overlapRight;
         } else {
             reverseY();
+            y += (overlapTop < overlapBottom) ? -overlapTop : overlapBottom;
         }
     }
 

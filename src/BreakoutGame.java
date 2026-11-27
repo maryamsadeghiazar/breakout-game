@@ -20,14 +20,14 @@ public class BreakoutGame extends GraphicsProgram {
         engine.run();
     }
 
-    @Override 
+    @Override
     public void keyPressed(KeyEvent e) {
         if (engine != null) {
             engine.keyPressed(e.getKeyCode());
         }
     }
 
-    @Override 
+    @Override
     public void keyReleased(KeyEvent e) {
         if (engine != null) {
             engine.keyReleased(e.getKeyCode());
@@ -41,7 +41,7 @@ public class BreakoutGame extends GraphicsProgram {
                 Constants.CANVAS_HEIGHT + extraHeight);
     }
 
-       public static void main(String[] args) {
+    public static void main(String[] args) {
         new BreakoutGame().start();
     }
 }

@@ -59,11 +59,16 @@ public class BreakoutCanvas {
         paddleView.setLocation(paddle.getX(), paddle.getY());
         ballView.setLocation(ball.getX(), ball.getY());
         for (int i = 0; i < bricks.size(); i++) {
-            brickViews.get(i).setVisible(!bricks.get(i).isDestroyed());
+            Brick brick = bricks.get(i);
+            GRect view = brickViews.get(i);
+            view.setVisible(!brick.isDestroyed());
+            view.setColor(brick.isStrong()
+                    ? Constants.STRONG_BRICK_COLOR
+                    : Constants.BRICK_COLORS[i / Constants.BRICK_COLS]);
         }
     }
 
-        public void drawHud(int lives, int score, int highScore) {
+    public void drawHud(int lives, int score, int highScore) {
         livesLabel.setLabel("Lives: " + lives);
         scoreLabel.setLabel("Score: " + score);
         highScoreLabel.setLabel("Best: " + highScore);
@@ -95,13 +100,11 @@ public class BreakoutCanvas {
                 break;
             case GAME_OVER:
                 showMessage(Constants.MSG_GAME_OVER,
-                    "Score: " + score + " - " + Constants.HINT_RESTART
-                );
+                        "Score: " + score + " - " + Constants.HINT_RESTART);
                 break;
             case VICTORY:
                 showMessage(Constants.MSG_VICTORY,
-                    "Score: " + score + " - " + Constants.HINT_RESTART
-                );
+                        "Score: " + score + " - " + Constants.HINT_RESTART);
                 break;
             default:
                 showMessage("", "");
@@ -114,8 +117,7 @@ public class BreakoutCanvas {
         hintLabel.setLabel(hint);
         centerLabel(messageLabel, Constants.CANVAS_HEIGHT / 2.0);
         centerLabel(hintLabel,
-            Constants.CANVAS_HEIGHT / 2.0 + Constants.MESSAGE_HINT_OFFSET
-        );
+                Constants.CANVAS_HEIGHT / 2.0 + Constants.MESSAGE_HINT_OFFSET);
     }
 
     private void centerLabel(GLabel label, double y) {

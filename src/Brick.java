@@ -2,18 +2,25 @@ public class Brick {
 
     private final int x;
     private final int y;
-    private boolean destroyed;
+    private final int maxHits;
+    private int hitsLeft;
 
-    public Brick(int x, int y) {
+    public Brick(int x, int y, int maxHits) {
         this.x = x;
         this.y = y;
+        this.maxHits = maxHits;
+        this.hitsLeft = maxHits;
     }
 
-    public void hit() { destroyed = true; }
+    public boolean hit() {
+        hitsLeft--;
+        return hitsLeft <= 0;
+    }
 
-    public boolean isDestroyed() { return destroyed; }
+    public void reset() { hitsLeft = maxHits; }
+
+    public boolean isDestroyed() { return hitsLeft <= 0; }
+    public boolean isStrong() { return hitsLeft > 1; }
     public int getX() { return x; }
     public int getY() { return y; }
-
-    public void reset() { destroyed = false; }
 }

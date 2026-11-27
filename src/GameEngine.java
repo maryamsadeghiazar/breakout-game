@@ -69,7 +69,8 @@ public class GameEngine {
                         + col * (Constants.BRICK_WIDTH + Constants.BRICK_GAP);
                 int y = Constants.BRICKS_TOP
                         + row * (Constants.BRICK_HEIGHT + Constants.BRICK_GAP);
-                list.add(new Brick(x, y));
+                int maxHits = (row < Constants.STRONG_BRICK_ROWS) ? Constants.STRONG_BRICK_HITS : 1;
+                list.add(new Brick(x, y, maxHits));
             }
         }
         return list;
@@ -169,9 +170,10 @@ public class GameEngine {
         for (Brick brick : bricks) {
             if (ball.hitsBrick(brick)) {
                 ball.bounceOffBrick(brick);
-                brick.hit();
-                score += Constants.BRICK_POINTS;
-                remainingBricks--;
+                if (brick.hit()) {
+                    score += Constants.BRICK_POINTS;
+                    remainingBricks--;
+                }
                 return;
             }
         }
