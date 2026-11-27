@@ -2,7 +2,6 @@ import acm.graphics.GCanvas;
 import acm.graphics.GLabel;
 import acm.graphics.GOval;
 import acm.graphics.GRect;
-import acm.graphics.GLabel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +14,8 @@ public class BreakoutCanvas {
     private final GLabel livesLabel;
     private final GLabel scoreLabel;
     private final GLabel highScoreLabel;
+    private final GLabel messageLabel;
+    private final GLabel hintLabel;
 
     public BreakoutCanvas(GCanvas canvas) {
         this.canvas = canvas;
@@ -37,6 +38,8 @@ public class BreakoutCanvas {
         livesLabel = createHudLabel(canvas);
         scoreLabel = createHudLabel(canvas);
         highScoreLabel = createHudLabel(canvas);
+        messageLabel = createMessageLabel(canvas, Constants.MESSAGE_FONT);
+        hintLabel = createMessageLabel(canvas, Constants.MESSAGE_HINT_FONT);
     }
 
     public void initBricks(List<Brick> bricks) {
@@ -83,5 +86,47 @@ public class BreakoutCanvas {
     private void placeLabel(GLabel label, double x) {
         double y = (Constants.HUD_HEIGHT + label.getAscent()) / 2;
         label.setLocation(x, y);
+    }
+
+    public void drawMessage(GameState state, int score) {
+        switch (state) {
+            case PAUSED:
+                showMessage(Constants.MSG_PAUSED, Constants.HINT_PAUSED);
+                break;
+            case GAME_OVER:
+                showMessage(Constants.MSG_GAME_OVER,
+                    "Score: " + score + " - " + Constants.HINT_RESTART
+                );
+                break;
+            case VICTORY:
+                showMessage(Constants.MSG_VICTORY,
+                    "Score: " + score + " - " + Constants.HINT_RESTART
+                );
+                break;
+            default:
+                showMessage("", "");
+                break;
+        }
+    }
+
+    private void showMessage(String title, String hint) {
+        messageLabel.setLabel(title);
+        hintLabel.setLabel(hint);
+        centerLabel(messageLabel, Constants.CANVAS_HEIGHT / 2.0);
+        centerLabel(hintLabel,
+            Constants.CANVAS_HEIGHT / 2.0 + Constants.MESSAGE_HINT_OFFSET
+        );
+    }
+
+    private void centerLabel(GLabel label, double y) {
+        label.setLocation((Constants.CANVAS_WIDTH - label.getWidth()) / 2, y);
+    }
+
+    private GLabel createMessageLabel(GCanvas canvas, String font) {
+        GLabel label = new GLabel("");
+        label.setFont(font);
+        label.setColor(Constants.MESSAGE_COLOR);
+        canvas.add(label);
+        return label;
     }
 }

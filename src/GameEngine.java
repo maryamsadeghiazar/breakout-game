@@ -11,6 +11,9 @@ public class GameEngine {
     private volatile boolean leftPressed;
     private volatile boolean rightPressed;
     private volatile boolean launchRequested;
+    private volatile boolean pauseRequested;
+    private volatile boolean resetRequested;
+    private volatile boolean pauseKeyDown;
     private GameState state;
     private int lives;
     private int score;
@@ -32,11 +35,17 @@ public class GameEngine {
         if (keyCode == KeyEvent.VK_LEFT) leftPressed = true;
         if (keyCode == KeyEvent.VK_RIGHT) rightPressed = true;
         if (keyCode == KeyEvent.VK_SPACE) launchRequested = true;
+        if (keyCode == KeyEvent.VK_R) resetRequested = true;
+        if (keyCode == KeyEvent.VK_P && !pauseKeyDown) {
+            pauseKeyDown = true;
+            pauseRequested = true;
+        }
     }
 
     public void keyReleased(int keyCode) {
         if (keyCode == KeyEvent.VK_LEFT) leftPressed = false;
         if (keyCode == KeyEvent.VK_RIGHT) rightPressed = false;
+        if (keyCode == KeyEvent.VK_P) pauseKeyDown = false;
     }
 
     public void run() {
@@ -44,6 +53,7 @@ public class GameEngine {
             update();
             view.draw(paddle, ball, bricks);
             view.drawHud(lives, score, highScore);
+            view.drawMessage(state, score);
             waitForNextFrame();
         }
     }
@@ -63,7 +73,12 @@ public class GameEngine {
     }
 
     private void update() {
-        movePaddle();
+        if (resetRequested) {
+            resetRequested = false;
+            resetGame();
+            return;
+        }
+        handlePauseRequest();
         switch (state) {
             case READY:
                 updateReady();
@@ -76,12 +91,36 @@ public class GameEngine {
         }
     }
 
+    private void handlePauseRequest() {
+        if (!pauseRequested) return;
+        pauseRequested = false;
+        if (state == GameState.RUNNING) {
+            state = GameState.PAUSED;
+        } else if (state == GameState.PAUSED) {
+            state = GameState.RUNNING;
+        }
+    }
+
+    private void resetGame() {
+        paddle.reset();
+        for (Brick brick : bricks) {
+            brick.reset();
+        }
+        remainingBricks = bricks.size();
+        lives = Constants.INITIAL_LIVES;
+        score = 0;
+        launchRequested = false;
+        ball.placeOnPaddle(paddle);
+        state = GameState.READY;
+    }
+
     private void movePaddle() {
         if (leftPressed) paddle.moveLeft();
         if (rightPressed) paddle.moveRight();
     }
 
     private void updateReady() {
+        movePaddle();
         ball.placeOnPaddle(paddle);
         if (launchRequested) {
             launchRequested = false;
@@ -92,6 +131,7 @@ public class GameEngine {
 
     private void updateRunning() {
         launchRequested = false;
+        movePaddle();
         ball.move();
         ball.bounceOffWalls();
         if (ball.hitsPaddle(paddle)) {
@@ -106,6 +146,7 @@ public class GameEngine {
     }
 
     private void bounceBallOffPaddle() {
+        // Calculate horizontal offset and half-width as separate variables
         double paddleCenter = paddle.getX() + paddle.getWidth() / 2.0;
         double ballCenter = ball.getX() + ball.getRadius();
         double deltaX = ballCenter - paddleCenter;
@@ -114,12 +155,15 @@ public class GameEngine {
         double offset = deltaX / halfWidth;
         offset = Math.max(-1.0, Math.min(1.0, offset));
 
+        // Calculate bounce angle (max 60 deg) and preserve total velocity
         double angle = offset * Math.toRadians(Constants.BALL_MAX_BOUNCE_ANGLE_DEG);
         double speed = Math.hypot(ball.getVx(), ball.getVy());
 
+        // Apply new velocity components (always deflect upwards)
         ball.setVx(speed * Math.sin(angle));
         ball.setVy(-Math.abs(speed * Math.cos(angle)));
-        
+
+        // Prevent the ball from sticking inside the paddle
         ball.setY(paddle.getY() - ball.getRadius() * 2);
     }
 

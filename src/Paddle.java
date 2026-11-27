@@ -7,8 +7,12 @@ public class Paddle {
     private final int y;
 
     public Paddle() {
-        x = (Constants.CANVAS_WIDTH - Constants.PADDLE_WIDTH) / 2;
         y = Constants.PADDLE_Y;
+        reset();
+    }
+
+    public void reset() {
+        x = (Constants.CANVAS_WIDTH - Constants.PADDLE_WIDTH) / 2;
     }
 
     public void moveLeft() {

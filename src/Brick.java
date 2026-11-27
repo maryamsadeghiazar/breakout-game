@@ -14,4 +14,6 @@ public class Brick {
     public boolean isDestroyed() { return destroyed; }
     public int getX() { return x; }
     public int getY() { return y; }
+
+    public void reset() { destroyed = false; }
 }

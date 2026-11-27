@@ -43,6 +43,16 @@ public final class Constants {
         new Color(158, 224, 224)
     };
 
+    public static final String MESSAGE_FONT = "SansSerif-BOLD-40";
+    public static final String MESSAGE_HINT_FONT = "SansSerif-18";
+    public static final Color MESSAGE_COLOR = Color.WHITE;
+    public static final int MESSAGE_HINT_OFFSET = 35;
+    public static final String MSG_PAUSED = "PAUSED";
+    public static final String MSG_GAME_OVER = "GAME OVER";
+    public static final String MSG_VICTORY = "YOU WIN!";
+    public static final String HINT_PAUSED = "Press P to resume";
+    public static final String HINT_RESTART = "Press R to restart";
+
     private Constants() {
     }
 
