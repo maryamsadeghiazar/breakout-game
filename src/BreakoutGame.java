@@ -16,7 +16,7 @@ public class BreakoutGame extends GraphicsProgram {
     public void run() {
         fitCanvasToWindow();
         BreakoutCanvas view = new BreakoutCanvas(getGCanvas());
-        engine = new GameEngine(view);
+        engine = new GameEngine(view, new InMemoryScoreStorage());
         engine.run();
     }
 

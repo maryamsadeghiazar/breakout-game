@@ -19,15 +19,18 @@ public class GameEngine {
     private int score;
     private int highScore;
     private int remainingBricks;
+    private final HighScoreStorage storage;
 
-    public GameEngine(BreakoutCanvas view) {
+    public GameEngine(BreakoutCanvas view, HighScoreStorage storage) {
         this.view = view;
+        this.storage = storage;
         this.paddle = new Paddle();
         this.ball = new Ball();
         this.bricks = createBricks();
         this.remainingBricks = bricks.size();
         this.state = GameState.READY;
         this.lives = Constants.INITIAL_LIVES;
+        this.highScore = storage.loadHighScore();
         view.initBricks(bricks);
     }
 
@@ -139,14 +142,13 @@ public class GameEngine {
         }
         handleBrickCollision();
         if (remainingBricks == 0) {
-            state = GameState.VICTORY;
+            endGame(GameState.VICTORY);
         } else if (ball.isLost()) {
             loseLife();
         }
     }
 
     private void bounceBallOffPaddle() {
-        // Calculate horizontal offset and half-width as separate variables
         double paddleCenter = paddle.getX() + paddle.getWidth() / 2.0;
         double ballCenter = ball.getX() + ball.getRadius();
         double deltaX = ballCenter - paddleCenter;
@@ -155,15 +157,11 @@ public class GameEngine {
         double offset = deltaX / halfWidth;
         offset = Math.max(-1.0, Math.min(1.0, offset));
 
-        // Calculate bounce angle (max 60 deg) and preserve total velocity
         double angle = offset * Math.toRadians(Constants.BALL_MAX_BOUNCE_ANGLE_DEG);
         double speed = Math.hypot(ball.getVx(), ball.getVy());
 
-        // Apply new velocity components (always deflect upwards)
         ball.setVx(speed * Math.sin(angle));
         ball.setVy(-Math.abs(speed * Math.cos(angle)));
-
-        // Prevent the ball from sticking inside the paddle
         ball.setY(paddle.getY() - ball.getRadius() * 2);
     }
 
@@ -185,7 +183,15 @@ public class GameEngine {
             state = GameState.READY;
             ball.placeOnPaddle(paddle);
         } else {
-            state = GameState.GAME_OVER;
+            endGame(GameState.GAME_OVER);
+        }
+    }
+
+    private void endGame(GameState finalState) {
+        state = finalState;
+        if (score > highScore) {
+            highScore = score;
+            storage.saveHighScore(highScore);
         }
     }
 
